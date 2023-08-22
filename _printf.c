@@ -1,88 +1,45 @@
 #include "main.h"
-
-
 /**
- * _switch - function that select format
- * @format: the format type
- * Return:void
+ * _printf - is a function that selects the correct function to print.
+ * @format: identifier to look for.
+ * Return: the length of the string.
  */
-
-void _switch(char format, va_list args, int count);
-
-/**
- * _printf - function to print input character
- * @format: our formating template
- * ...: rest of the parameterr
- *Return: int count
- */
-
-int _printf(const char *format, ...)
+int _printf(const char * const format, ...)
 {
+	convert_match m[] = {
+		{"%s", printf_string}, {"%c", printf_char},
+		{"%%", printf_37},
+		{"%i", printf_int}, {"%d", printf_dec}, {"%r", printf_srev},
+		{"%R", printf_rot13}, {"%b", printf_bin}, {"%u", printf_unsigned},
+		{"%o", printf_oct}, {"%x", printf_hex}, {"%X", printf_HEX},
+		{"%S", printf_exclusive_string}, {"%p", printf_pointer}
+	};
+
 	va_list args;
-	int count  = 0;
+	int i = 0, j, len = 0;
 
 	va_start(args, format);
-	while (*format)
+	if (format == NULL || (format[0] == '%' && format[1] == '\0'))
+		return (-1);
+
+Here:
+	while (format[i] != '\0')
 	{
-		if (*format == '%')
+		j = 13;
+		while (j >= 0)
 		{
-			_switch(*format,args,count);
-			format++;
-
+			if (m[j].id[0] == format[i] && m[j].id[1] == format[i + 1])
+			{
+				len += m[j].f(args);
+				i = i + 2;
+				goto Here;
+			}
+			j--;
 		}
-		else
-		{
-			write(1, format, 1);
-			count++;
-		}
-
-		format++;
+		_putchar(format[i]);
+		len++;
+		i++;
 	}
 	va_end(args);
-	return (count);
-}
-
-
-/**
- * _switch - function that select format
- * @format: the format type
- * Return:void
- */
-
-void _switch(char format, va_list args, int count)
-{
-	switch (format)
-	{
-		case 'c':
-		{
-			char c = va_arg(args, int);
-
-			write(1, &c, 1);
-			count++;
-			break;
-		}
-		case 's':
-		{
-			const char *str = va_arg(args, const char *);
-
-			while (*str)
-			{
-				write(1, str, 1);
-				str++;
-				count++;
-			}
-			break;
-		}
-		case '%':
-		{
-			char percent = '%';
-
-			write(1, &percent, 1);
-			count++;
-			break;
-		}
-
-		default:
-		break;
-	}
+	return (len);
 }
