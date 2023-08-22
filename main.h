@@ -5,6 +5,6 @@
 #include <unistd.h>
 
 int _printf(const char *format, ...);
-#include "_printf.c"
+
 
 #endif
