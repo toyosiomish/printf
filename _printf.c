@@ -1,6 +1,4 @@
-#include <unistd.h>
-#include <stdarg.h>
-#include <limits.h>
+#include "main.h"
 
 
 /**
