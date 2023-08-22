@@ -35,7 +35,7 @@ int _printf(const char *format, ...)
 		}
 		else
 		{
-			_putchar(form);
+			_putchar(format);
 			count++;
 		}
 
