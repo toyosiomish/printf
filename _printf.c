@@ -1,92 +1,66 @@
-#include <unistd.h>
-#include <stdarg.h>
-#include <limits.h>
+#include "main.h"
 
-
-/**
- * _switch - function that select format
- * @format: the format type
- * Return:void
- */
-
-void _switch(char format, va_list args, int charCount);
+void print_buffer(char buffer[], int *buff_ind);
 
 /**
- * _printf - function to print input character
- * @format: our formating template
- * ...: rest of the parameterr
- *Return: int charCount
+ * _printf - Printf function
+ * @format: format.
+ * Return: Printed chars.
  */
-
 int _printf(const char *format, ...)
 {
-	va_list args;
+	int i, printed = 0, printed_chars = 0;
+	int flags, width, precision, size, buff_ind = 0;
+	va_list list;
+	char buffer[BUFF_SIZE];
 
-	va_start(args, format);
+	if (format == NULL)
+		return (-1);
 
-	int charCount = 0;
+	va_start(list, format);
 
-	while (*format)
+	for (i = 0; format && format[i] != '\0'; i++)
 	{
-		if (*format == '%')
+		if (format[i] != '%')
 		{
-			_switch(*format,args,charCount);
-			format++;
-
+			buffer[buff_ind++] = format[i];
+			if (buff_ind == BUFF_SIZE)
+				print_buffer(buffer, &buff_ind);
+			/* write(1, &format[i], 1);*/
+			printed_chars++;
 		}
 		else
 		{
-			write(1, format, 1);
-			charCount++;
+			print_buffer(buffer, &buff_ind);
+			flags = get_flags(format, &i);
+			width = get_width(format, &i, list);
+			precision = get_precision(format, &i, list);
+			size = get_size(format, &i);
+			++i;
+			printed = handle_print(format, &i, list, buffer,
+				flags, width, precision, size);
+			if (printed == -1)
+				return (-1);
+			printed_chars += printed;
 		}
-
-		format++;
 	}
-	va_end(args);
-	return (charCount);
+
+	print_buffer(buffer, &buff_ind);
+
+	va_end(list);
+
+	return (printed_chars);
 }
 
-
 /**
- * _switch - function that select format
- * @format: the format type
- * Return:void
+ * print_buffer - Prints the contents of the buffer if it exist
+ * @buffer: Array of chars
+ * @buff_ind: Index at which to add next char, represents the length.
  */
-
-void _switch(char format, va_list args, int charCount)
+void print_buffer(char buffer[], int *buff_ind)
 {
-	switch (format)
-	{
-		case 'c':
-		{
-			char c = va_arg(args, int);
+	if (*buff_ind > 0)
+		write(1, &buffer[0], *buff_ind);
 
-			write(1, &c, 1);
-			charCount++;
-			break;
-		}
-		case 's':
-		{
-			const char *str = va_arg(args, const char *);
-
-			while (*str)
-			{
-				write(1, str, 1);
-				str++;
-				charCount++;
-			}
-			break;
-		}
-		case '%':
-		{
-			char percent = '%';
-
-			write(1, &percent, 1);
-			charCount++;
-			break;
-		}
-
-		default:
-		break;
-	}
+	*buff_ind = 0;
 }
