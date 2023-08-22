@@ -1,6 +1,6 @@
 #ifndef MAIN
 #define MAIN
 
-#include "printf.c";
+int _printf(const char *format, ...);
 
 #endif
