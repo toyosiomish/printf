@@ -1,7 +1,4 @@
-#include <unistd.h>
-#include <stdarg.h>
-#include <limits.h>
-#include <stdio.h>
+#include "main.h"
 
 /**
  * _print_char - helper function to print a character
@@ -52,6 +49,12 @@ void _switch(va_list args, char format, int *charCount)
 		case '%':
 			write(1, &format, 1);
 			(*charCount)++;
+			break;
+		case 'd':
+			printf_dec(args);
+			break;
+		case 'i':
+			printf_int(args);
 			break;
 		default:
 			break;
