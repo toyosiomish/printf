@@ -21,18 +21,21 @@ int _printf(const char *format, ...)
 	va_list args;
 	int count  = 0;
 
+	if (format == NULL || (format[0] == '%' && format[1] == '\0'))
+		return (-1);
+
 	va_start(args, format);
 	while (*format)
 	{
 		if (*format == '%')
 		{
-			_switch(*format,args,count);
+			_switch(*format, args,count);
 			format++;
 
 		}
 		else
 		{
-			write(1, format, 1);
+			_putchart(form;
 			count++;
 		}
 
